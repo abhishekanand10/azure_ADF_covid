@@ -15,21 +15,37 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_adls_covidreportingdl'"
 		},
+		"ls_mock_sqldb_consituents_test_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_mock_sqldb_consituents_test'"
+		},
 		"ls_adls_covidreportingdl_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://covidreporting1006dl.dfs.core.windows.net/"
+		},
+		"ls_donorsearch_REST_test_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "http://data.donorlead.net/v2.1/"
 		},
 		"ls_http_opendata_ecdc_europe_eu_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().sourceBaseURL}"
 		},
+		"ls_mock_sqldb_consituents_test_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "covid-srv1006.database.windows.net"
+		},
+		"ls_mock_sqldb_consituents_test_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "covid-db"
+		},
+		"ls_mock_sqldb_consituents_test_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "adm"
+		},
 		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/46edc3e4-9ab5-45bf-ac8d-802d9cd7c23c/resourceGroups/covid-reporting-rg/providers/Microsoft.Storage/storageAccounts/covidreportingsa1006"
-		},
-		"ls_donorsearch_REST_test_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "http://data.donorlead.net/v2.1/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -64,14 +80,26 @@
 					"ls_adls_covidreportingdl_accountKey": {
 						"value": "[parameters('ls_adls_covidreportingdl_accountKey')]"
 					},
+					"ls_mock_sqldb_consituents_test_password": {
+						"value": "[parameters('ls_mock_sqldb_consituents_test_password')]"
+					},
 					"ls_adls_covidreportingdl_properties_typeProperties_url": {
 						"value": "[parameters('ls_adls_covidreportingdl_properties_typeProperties_url')]"
+					},
+					"ls_donorsearch_REST_test_properties_typeProperties_url": {
+						"value": "[parameters('ls_donorsearch_REST_test_properties_typeProperties_url')]"
 					},
 					"ls_http_opendata_ecdc_europe_eu_properties_typeProperties_url": {
 						"value": "[parameters('ls_http_opendata_ecdc_europe_eu_properties_typeProperties_url')]"
 					},
-					"ls_donorsearch_REST_test_properties_typeProperties_url": {
-						"value": "[parameters('ls_donorsearch_REST_test_properties_typeProperties_url')]"
+					"ls_mock_sqldb_consituents_test_properties_typeProperties_server": {
+						"value": "[parameters('ls_mock_sqldb_consituents_test_properties_typeProperties_server')]"
+					},
+					"ls_mock_sqldb_consituents_test_properties_typeProperties_database": {
+						"value": "[parameters('ls_mock_sqldb_consituents_test_properties_typeProperties_database')]"
+					},
+					"ls_mock_sqldb_consituents_test_properties_typeProperties_userName": {
+						"value": "[parameters('ls_mock_sqldb_consituents_test_properties_typeProperties_userName')]"
 					},
 					"tr_ingest_population_data_properties_typeProperties_scope": {
 						"value": "[parameters('tr_ingest_population_data_properties_typeProperties_scope')]"

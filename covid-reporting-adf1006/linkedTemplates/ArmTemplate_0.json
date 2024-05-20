@@ -15,17 +15,33 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_adls_covidreportingdl'"
 		},
+		"ls_mock_sqldb_consituents_test_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_mock_sqldb_consituents_test'"
+		},
 		"ls_adls_covidreportingdl_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://covidreporting1006dl.dfs.core.windows.net/"
+		},
+		"ls_donorsearch_REST_test_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "http://data.donorlead.net/v2.1/"
 		},
 		"ls_http_opendata_ecdc_europe_eu_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().sourceBaseURL}"
 		},
-		"ls_donorsearch_REST_test_properties_typeProperties_url": {
+		"ls_mock_sqldb_consituents_test_properties_typeProperties_server": {
 			"type": "string",
-			"defaultValue": "http://data.donorlead.net/v2.1/"
+			"defaultValue": "covid-srv1006.database.windows.net"
+		},
+		"ls_mock_sqldb_consituents_test_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "covid-db"
+		},
+		"ls_mock_sqldb_consituents_test_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "adm"
 		},
 		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
@@ -67,6 +83,21 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ls_donorsearch_REST_test')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('ls_donorsearch_REST_test_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ls_http_opendata_ecdc_europe_eu')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -87,19 +118,93 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_donorsearch_REST_test')]",
+			"name": "[concat(parameters('factoryName'), '/ls_mock_sqldb_consituents_test')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "RestService",
+				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"url": "[parameters('ls_donorsearch_REST_test_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
+					"server": "[parameters('ls_mock_sqldb_consituents_test_properties_typeProperties_server')]",
+					"database": "[parameters('ls_mock_sqldb_consituents_test_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_mock_sqldb_consituents_test_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_mock_sqldb_consituents_test_password')]"
+					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_donorsearch_REST_test')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_donorsearch_REST_test",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"homeState": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "?key=5d95e4d6342b5&firstName=@{dataset().firstName}&lastName=@{dataset().lastName}&homeState=@{dataset().homeState}",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_donorsearch_REST_test')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_donorsearch_sink_REST_test')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ablob_cvidreportingsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"id": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat('donor',dataset().id,'.json')",
+							"type": "Expression"
+						},
+						"folderPath": "test/temp/",
+						"container": "donorsearchhttpblob"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_ablob_cvidreportingsa')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_ecdc_file_list')]",
@@ -217,6 +322,45 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_mock_constituents_test')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_mock_sqldb_consituents_test",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "firstName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "lastName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "homeState",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "sample_constituents"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_mock_sqldb_consituents_test')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_population_raw_gz')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -276,48 +420,133 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_donorsearch_REST_test')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/pl_donorsearch_http_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_donorsearch_REST_test",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": "?key=5d95e4d6342b5&firstName=@{pipeline().parameters.firstName}&lastName=@{pipeline().parameters.lastName}&homeState=@{pipeline().parameters.homeState}"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_donorsearch_REST_test')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_donorsearch_sink_REST_test')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_ablob_cvidreportingsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "donor.json",
-						"folderPath": "test",
-						"container": "donorsearchhttpblob"
+				"activities": [
+					{
+						"name": "Lookup List of constituents",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_mock_constituents_test",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach constituent",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup List of constituents",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup List of constituents').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "Copy donorsearch http data",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"supportRFC5988": "true"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings",
+												"copyBehavior": "MergeFiles"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_donorsearch_REST_test",
+											"type": "DatasetReference",
+											"parameters": {
+												"firstName": {
+													"value": "@item().firstName",
+													"type": "Expression"
+												},
+												"lastName": {
+													"value": "@item().lastName",
+													"type": "Expression"
+												},
+												"homeState": "@item().homeState"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_donorsearch_sink_REST_test",
+											"type": "DatasetReference",
+											"parameters": {
+												"id": {
+													"value": "@item().id",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
 					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
 				},
-				"schema": {}
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_ablob_cvidreportingsa')]"
+				"[concat(variables('factoryId'), '/datasets/ds_mock_constituents_test')]",
+				"[concat(variables('factoryId'), '/datasets/ds_donorsearch_REST_test')]",
+				"[concat(variables('factoryId'), '/datasets/ds_donorsearch_sink_REST_test')]"
 			]
 		},
 		{
@@ -679,83 +908,6 @@
 				"[concat(variables('factoryId'), '/datasets/ds_population_raw_gz')]",
 				"[concat(variables('factoryId'), '/datasets/ds_population_raw_tsv')]",
 				"[concat(variables('factoryId'), '/linkedServices/ls_ablob_cvidreportingsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_donorsearch_http_test')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy donorsearch http data",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"supportRFC5988": "true"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_donorsearch_REST_test",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_donorsearch_sink_REST_test",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"firstName": {
-						"type": "string"
-					},
-					"lastName": {
-						"type": "string"
-					},
-					"homeState": {
-						"type": "string"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_donorsearch_REST_test')]",
-				"[concat(variables('factoryId'), '/datasets/ds_donorsearch_sink_REST_test')]"
 			]
 		},
 		{
