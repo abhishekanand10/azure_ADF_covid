@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy donorsearch http data",
-				"type": "Copy",
+				"name": "Lookup List of constituents",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -16,51 +16,104 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010",
-						"requestMethod": "GET",
-						"paginationRules": {
-							"supportRFC5988": "true"
-						}
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
-					"sink": {
-						"type": "JsonSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "MergeFiles"
-						},
-						"formatSettings": {
-							"type": "JsonWriteSettings"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "ds_donorsearch_REST_test",
+					"dataset": {
+						"referenceName": "ds_mock_constituents_test",
 						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach constituent",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup List of constituents",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
-				"outputs": [
-					{
-						"referenceName": "ds_donorsearch_sink_REST_test",
-						"type": "DatasetReference"
-					}
-				]
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup List of constituents').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "Copy donorsearch http data",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"paginationRules": {
+										"supportRFC5988": "true"
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings",
+										"copyBehavior": "MergeFiles"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_donorsearch_REST_test",
+									"type": "DatasetReference",
+									"parameters": {
+										"firstName": {
+											"value": "@item().firstName",
+											"type": "Expression"
+										},
+										"lastName": {
+											"value": "@item().lastName",
+											"type": "Expression"
+										},
+										"homeState": "@item().homeState"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_donorsearch_sink_REST_test",
+									"type": "DatasetReference",
+									"parameters": {
+										"id": {
+											"value": "@item().id",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
 			}
 		],
-		"parameters": {
-			"firstName": {
-				"type": "string"
-			},
-			"lastName": {
-				"type": "string"
-			},
-			"homeState": {
-				"type": "string"
-			}
-		},
 		"annotations": []
 	}
 }

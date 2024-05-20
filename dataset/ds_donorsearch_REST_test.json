@@ -5,10 +5,24 @@
 			"referenceName": "ls_donorsearch_REST_test",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"firstName": {
+				"type": "string"
+			},
+			"lastName": {
+				"type": "string"
+			},
+			"homeState": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
-			"relativeUrl": "?key=5d95e4d6342b5&firstName=@{pipeline().parameters.firstName}&lastName=@{pipeline().parameters.lastName}&homeState=@{pipeline().parameters.homeState}"
+			"relativeUrl": {
+				"value": "?key=5d95e4d6342b5&firstName=@{dataset().firstName}&lastName=@{dataset().lastName}&homeState=@{dataset().homeState}",
+				"type": "Expression"
+			}
 		},
 		"schema": []
 	}

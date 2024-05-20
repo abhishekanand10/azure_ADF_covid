@@ -5,13 +5,21 @@
 			"referenceName": "ls_ablob_cvidreportingsa",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"id": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "donor.json",
-				"folderPath": "test",
+				"fileName": {
+					"value": "@concat('donor',dataset().id,'.json')",
+					"type": "Expression"
+				},
+				"folderPath": "test/temp/",
 				"container": "donorsearchhttpblob"
 			}
 		},
