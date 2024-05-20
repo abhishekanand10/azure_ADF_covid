@@ -1,0 +1,34 @@
+{
+	"name": "ds_mock_constituents_test",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_mock_sqldb_consituents_test",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "firstName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "lastName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "homeState",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "sample_constituents"
+		}
+	}
+}
