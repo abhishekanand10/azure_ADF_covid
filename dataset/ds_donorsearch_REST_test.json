@@ -1,0 +1,15 @@
+{
+	"name": "ds_donorsearch_REST_test",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_donorsearch_REST_test",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "?key=5d95e4d6342b5&firstName=@{pipeline().parameters.firstName}&lastName=@{pipeline().parameters.lastName}&homeState=@{pipeline().parameters.homeState}"
+		},
+		"schema": []
+	}
+}
