@@ -20,6 +20,9 @@
 		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"value": "/subscriptions/46edc3e4-9ab5-45bf-ac8d-802d9cd7c23c/resourceGroups/covid-reporting-rg/providers/Microsoft.Storage/storageAccounts/covidreportingsa1006"
 		},
+		"ls_donorsearch_REST_test_properties_typeProperties_url": {
+			"value": "http://data.donorlead.net/v2.1/"
+		},
 		"containerUri": {
 			"value": ""
 		},
