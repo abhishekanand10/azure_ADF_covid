@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "?key=\"5d95e4d6342b5\"&firstName=\"Bill\"&lastName=\"Gates\""
+				"relativeUrl": "firstName=Bill&lastName=Gates&homeState=WA"
 			}
 		},
 		"schema": {}
