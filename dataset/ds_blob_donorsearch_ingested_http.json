@@ -1,0 +1,19 @@
+{
+	"name": "ds_blob_donorsearch_ingested_http",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_blob_donorsearch_http_test",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "donor.json",
+				"container": "donorsearchhttpblob"
+			}
+		},
+		"schema": {}
+	}
+}
