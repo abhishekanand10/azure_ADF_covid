@@ -1,0 +1,12 @@
+{
+	"name": "ls_donorsearch_REST_test",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "http://data.donorlead.net/v2.1/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
