@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "http://data.donorlead.net/v2.1/?key=5d95e4d6342b5&",
+			"url": "http://data.donorlead.net/v2.1/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
