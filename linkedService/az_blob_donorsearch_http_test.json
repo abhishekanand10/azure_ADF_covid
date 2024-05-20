@@ -1,0 +1,11 @@
+{
+	"name": "az_blob_donorsearch_http_test",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"containerUri": "https://covidreportingsa1006.blob.core.windows.net/donorsearchhttpblob",
+			"authenticationType": "Anonymous"
+		}
+	}
+}
